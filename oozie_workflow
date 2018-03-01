@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<workflow-app xmlns="uri:oozie:workflow:0.5" name="automatize_pig_hive">
+    <start to="create_hive_tables"/>
+    <action name="create_hive_tables">
+        <hive2 xmlns="uri:oozie:hive2-action:0.2">
+            <job-tracker>${resourceManager}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <jdbc-url>jdbc:hive2://headnodehost:10001/;transportMode=http</jdbc-url>
+            <script>/github/scripts/create_tables.q</script>
+        </hive2>
+        <ok to="aggregate_data_pig"/>
+        <error to="kill"/>
+    </action>
+    <action name="aggregate_data_pig">
+        <pig>
+            <job-tracker>${resourceManager}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <configuration>
+                <property>
+                    <name>hive.metastore.uris</name>
+                    <value>thrift://hn0-ecphil.wecj25fqt4fuplkpzagufr0ked.fx.internal.cloudapp.net:9083</value>
+                </property>
+                <property>
+                    <name>oozie.action.sharelib.for.pig</name>
+                    <value>pig,hive</value>
+                </property>
+            </configuration>
+            <script>/github/scripts/clean_logs.pig</script>
+        </pig>
+        <ok to="end"/>
+        <error to="kill"/>
+    </action>
+    <kill name="kill">
+        <message>${wf:errorMessage(wf:lastErrorNode())}</message>
+    </kill>
+    <end name="end"/>
+</workflow-app>
