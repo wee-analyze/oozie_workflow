@@ -16,5 +16,6 @@ CREATE TABLE product_log_stats
 visits BIGINT,
 first CHAR(8),
 last CHAR(8))
-ROW FORMAT SERDE 'org.apache.hive.hcatalog.data.JsonSerDe';  --saves as JSON format. If you want another format instead, for example csv format, then you can use ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+ROW FORMAT SERDE 'org.apache.hive.hcatalog.data.JsonSerDe';  --saves as JSON format. 
+--If you want another format instead, for example csv format, then you can use ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
 ;
